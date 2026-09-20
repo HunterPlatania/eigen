@@ -16,7 +16,7 @@ An eigenvalue tells you how much unity there is in the stocks' movement - how mu
 
 The largest eigenvalue is 22.1 out of 55, so one shared pattern explains about 40 percent of everything these 55 companies do. That pattern is the market itself. It is strong, but nowhere near total.
 
-I plotted the eigenvalues against the Marchenko-Pastur distribution, which is the shape you would get if the stocks had no real relationships at all and every correlation was luck. Anything inside that curve could be noise. A few eigenvalues sit past the edge (about 1.32) and are real - those are sectors. The largest one is 17 times past the edge, so it is off the chart entirely.
+I plotted the eigenvalues against the Marchenko-Pastur distribution, which is the shape you would get if the stocks had no real relationships at all and every correlation was luck. Anything inside that curve could be noise. A few eigenvalues sit past the edge (about 1.32) and are real. The largest one is 17 times past the edge, so it is off the chart entirely.
 
 One thing I did not expect: the bulk of my eigenvalues sits to the left of the Marchenko-Pastur curve instead of under it. The market eigenvalue takes 22.1 of the 55 units, which leaves less for everything else and squeezes them down. Removing the market mode first is a Phase 1 task.
 
