@@ -2,10 +2,6 @@ import numpy as np
 import pandas as pd
 import yfinance as yf
 
-# Start from 55 and extend to ~100 tickers with full history since 2010.
-
-# ~104 large caps, all trading under the same ticker since before 2010,
-# grouped by sector so 1.4 can check the modes against reality.
 SECTOR = {
     # tech
     "AAPL":"tech","MSFT":"tech","NVDA":"tech","ORCL":"tech","IBM":"tech",
@@ -43,12 +39,28 @@ SECTOR = {
 TICKERS = list(SECTOR)
 
 def download_returns(start="2010-01-01", path="returns.parquet"):
+    # 1) fetch: daily adjusted closing prices for all 104 tickers since 2010
     prices = yf.download(TICKERS, start=start, auto_adjust=True)["Close"]
-    prices = prices.dropna(axis=1) # drop tickers with any gap
+
+    # keep stocks with at least 99% of days present, then drop the rare leftover days with a hole anywhere
+    good = prices.columns[prices.isna().mean() < 0.01]
+    prices = prices[good].dropna(axis=0)
+
+    # 3) convert: prices -> daily log returns. shift(1) is "yesterday's table",
+    #    so prices/prices.shift(1) is today-vs-yesterday for every cell at once.
+    #    The first row has no yesterday, comes out all NaN, and dropna deletes it
     rets = np.log(prices / prices.shift(1)).dropna()
+
+    # 4) cache: save to disk so Yahoo is never needed again
     rets.to_parquet(path)
+
+    # 5) report: T days, N survivors, and the evidence ratio
     print(f"T={len(rets)} days, N={rets.shape[1]} stocks, T/N={len(rets)/rets.shape[1]:.1f}")
     return rets
 
 def load_returns(path="returns.parquet"):
+    # every later task starts here: instant reload of the finished table
     return pd.read_parquet(path)
+
+#python -c "from data import download_returns; download_returns()"
+#python -c "import yfinance as yf; from data import TICKERS; p = yf.download(TICKERS, start='2010-01-01', auto_adjust=True)['Close']; print(p.isna().sum().sort_values(ascending=False).head(10))"
