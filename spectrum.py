@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
 
 def correlation(returns):
     # the whole 102x102 grid in one call; rowvar=False says
@@ -43,3 +44,15 @@ def plot_spectrum(returns, fname="figures/spectrum.png", zoom=3.5):
 
 # how many beat luck's ceiling, top ten
 #python -c "from data import load_returns; from spectrum import spectrum; v = spectrum(load_returns()); print('above ceiling:', int((v > 1.34).sum())); print([round(x,2) for x in v[:10]])"
+
+def remove_market_mode(returns):
+    C = correlation(returns)
+    vals, vecs = np.linalg.eigh(C)      # scores AND rosters, sorted smallest first
+    market = vecs[:, -1]                # LAST column = the big team's roster (eigh sorts ascending!)
+    X = (returns - returns.mean()) / returns.std()   # own-normal units (the heart-rate trick)
+    f = X.values @ market               # tide height, one number per day
+    beta = X.values.T @ f / (f @ f)     # each stock's tide-sensitivity
+    resid = X.values - np.outer(f, beta)   # subtract tide x sensitivity from every cell
+    return pd.DataFrame(resid, index=returns.index, columns=returns.columns)
+
+#python -c "from data import load_returns; from spectrum import spectrum, remove_market_mode, plot_spectrum; r = load_returns(); resid = remove_market_mode(r); v = spectrum(resid); print('new top 5:', [round(x,2) for x in v[:5]]); print('sum:', round(v.sum(),1)); plot_spectrum(resid, fname='figures/spectrum_clean.png')"
