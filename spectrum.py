@@ -55,4 +55,5 @@ def remove_market_mode(returns):
     resid = X.values - np.outer(f, beta)   # subtract tide x sensitivity from every cell
     return pd.DataFrame(resid, index=returns.index, columns=returns.columns)
 
+#GIVE SECOND LAYER: remove the reason stocks moves together, to reveal what stocks move together FOR THEIR OWN REASONS.
 #python -c "from data import load_returns; from spectrum import spectrum, remove_market_mode, plot_spectrum; r = load_returns(); resid = remove_market_mode(r); v = spectrum(resid); print('new top 5:', [round(x,2) for x in v[:5]]); print('sum:', round(v.sum(),1)); plot_spectrum(resid, fname='figures/spectrum_clean.png')"
