@@ -1,0 +1,10 @@
+# EIGEN Phase 1 Results
+
+## Data (1.1)
+I downloaded daily adjusted closing prices for 104 large US stocks from Yahoo Finance via yfinance covering 2010-01-01 through September 2026. Adjusted prices fix split and dividend jumps (like Apple's 4-for-1 split) so charts show actual financial gains instead of artificial drops. I converted these into daily log returns, ln(today/yesterday). After failed downloads for BK and EA, I kept stocks with 99%+ complete data, then dropped the few remaining days with gaps, because protecting the number of time steps matters more than losing two stocks. The cached returns.parquet dataset holds T=4205 days and N=102 stocks (T/N approx 41).
+
+## Spectrum (1.2)
+I built a 102 x 102 correlation matrix on standardized returns across all pairs simultaneously. The top eigenvalue reached 38.06 out of 102, showing a single broad market factor carries roughly 37% of all stock movement. At q = N/T = 0.024, the Marchenko-Pastur threshold puts pure random noise between 0.71 and 1.34, meaning anything over 1.34 is genuine signal. Synthetic random returns of the same 4205 x 102 size topped out at 1.32, confirming the noise ceiling. Exactly eight eigenvalues beat 1.34 (38.06, 6.67, 4.73, 2.65, 2.20, 2.02, 1.62, 1.46), while the noise bulk sits to the left of the MP band as pictured in figures/spectrum.png.
+
+## Removing the market mode (1.3)
+I calculated each day's market factor and each stock's beta sensitivity, then subtracted factor x beta from every stock to keep only residual returns. This removes the main reason everything moves together so quieter patterns can show up. The new top eigenvalues dropped to 10.19, 7.81, 4.81, 3.21, and 3.14, re-normalizing the sum to 102 while pushing the bulk right onto the MP curve now that the market mode stops eating the budget. The next step is matching these remaining patterns against sector labels in data.py, as seen in figures/spectrum_clean.png.
