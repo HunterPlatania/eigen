@@ -6,21 +6,22 @@ from portfolio import min_variance, predicted_vol
 
 WINDOW = 504
 HOLD = 21
+NAMES = ["RAW", "CLEAN", "CLEAN_ADJ"]
 
 
 def run_backtest(returns, window=WINDOW, hold=HOLD):
-    realized = {"RAW": [], "CLEAN": []}
-    predicted = {"RAW": [], "CLEAN": []}
+    realized = {name: [] for name in NAMES}
+    predicted = {name: [] for name in NAMES}
 
     for start in range(window, len(returns) - hold + 1, hold):
         train = returns.iloc[start - window:start]
         test = returns.iloc[start:start + hold]
 
         corr = correlation(train)
-        cleaned = clip(corr, window)
         vols = train.std()
         covs = {"RAW": to_covariance(corr, vols),
-                "CLEAN": to_covariance(cleaned, vols)}
+                "CLEAN": to_covariance(clip(corr, window), vols),
+                "CLEAN_ADJ": to_covariance(clip(corr, window, adjust=True), vols)}
 
         for name, cov in covs.items():
             w = min_variance(cov)
@@ -35,7 +36,7 @@ if __name__ == "__main__":
     realized, predicted = run_backtest(returns)
     print("rebalances:", len(predicted["RAW"]))
 
-    for name in ["RAW", "CLEAN"]:
+    for name in NAMES:
         daily = np.concatenate(realized[name])
         real_vol = daily.std() * np.sqrt(252)
         pred_vol = np.mean(predicted[name]) * np.sqrt(252)
