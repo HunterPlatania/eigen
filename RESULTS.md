@@ -32,6 +32,6 @@ The test looked back over 504 trading days (about 2 years), rebuilt the portfoli
 
 Plain clipping lost because it didn't account for the market mode. The luck line sat too high (2.1), so it cut into real signal instead of just noise. Correcting the luck line for the market mode got it down to 13.39%, which closed most of the gap from 14.59%, but it still did not get below raw's 13.01%. Before running it, I predicted the corrected version would beat raw. It did not.
 
-**Verdict: on this data, cleaning does not beat the raw matrix.**
+**Conclusion: on this data, cleaning does not beat the raw matrix.**
 
 All three matrices also promised too little risk. Every realized number came in about 50% higher than predicted (ratios 1.50 to 1.63), so a 2-year look-back underestimated real volatility no matter how the matrix was cleaned.
