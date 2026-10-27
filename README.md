@@ -1,31 +1,43 @@
-﻿# EIGEN
+﻿# EIGEN: Cleaning stock correlation matrices with random matrix theory
 
-Using random matrix theory to figure out how much of a stock correlation matrix is real information and how much is just noise.
+**Status: v1.0, Phase 1 complete.**
 
-## Phase 0
+I built a 102 x 102 correlation matrix from 4,205 days of returns for 102 large US stocks (2010 to 2026). The top eigenvalue reached 38.06 out of 102, showing a single broad market factor carries roughly 37% of all stock movement, and exactly eight eigenvalues beat the Marchenko-Pastur noise ceiling of 1.34. I cleaned the matrix by eigenvalue clipping, built minimum-variance portfolios, and tested them on unseen days over 176 monthly rebalances.
 
-I pulled 10 years of daily prices (2015-2025) for 55 large US companies and turned them into daily returns. From those I built a correlation matrix, which measures whether the stocks move together, and then took its eigenvalues.
+**Verdict: on this data, cleaning does not beat the raw matrix.** Raw had the lowest realized risk (13.01%, vs 14.59% clipped and 13.39% clipped-adjusted). All three matrices also promised too little risk: every realized number came in about 50% higher than predicted.
 
-An eigenvalue tells you how much unity there is in the stocks' movement - how much of the total movement one shared pattern explains. The eigenvalues always add up to the number of stocks, so with 55 stocks, if all of them moved together perfectly the largest eigenvalue would be 55.
+![Predicted vs realized portfolio risk](figures/headline.png)
 
-## What I found
+Full write-up: [RESULTS.md](RESULTS.md)
 
-- Smallest eigenvalue: 0.093
-- Largest eigenvalue: 22.113
-- Sum: 55.0
+## Run it yourself
 
-The largest eigenvalue is 22.1 out of 55, so one shared pattern explains about 40 percent of everything these 55 companies do. That pattern is the market itself. It is strong, but nowhere near total.
+Requires Python 3.14. On Windows:
 
-I plotted the eigenvalues against the Marchenko-Pastur distribution, which is the shape you would get if the stocks had no real relationships at all and every correlation was luck. Anything inside that curve could be noise. A few eigenvalues sit past the edge (about 1.32) and are real. The largest one is 17 times past the edge, so it is off the chart entirely.
+    git clone https://github.com/HunterPlatania/eigen
+    cd eigen
+    py -m venv .venv
+    .venv\Scripts\Activate.ps1
+    pip install -r requirements.txt
+    python backtest.py
 
-One thing I did not expect: the bulk of my eigenvalues sits to the left of the Marchenko-Pastur curve instead of under it. The market eigenvalue takes 22.1 of the 55 units, which leaves less for everything else and squeezes them down. Removing the market mode first is a Phase 1 task.
+The data is cached in `returns.parquet`, so no download is needed. A fresh clone reproduces the numbers above exactly.
 
-## Notes
+## Files
 
-Phase 0 reproduces a known result (Laloux, Cizeau, Bouchaud and Potters, 1999). Nothing here is new. The point was to build it myself and understand it.
+| File | What it does |
+| :-- | :-- |
+| `data.py` | Downloads prices with yfinance and builds `returns.parquet` |
+| `spectrum.py` | Correlation matrix, eigenvalues, Marchenko-Pastur curve, market mode removal |
+| `clean.py` | Eigenvalue clipping and covariance |
+| `portfolio.py` | Minimum-variance portfolios |
+| `backtest.py` | Rolling out-of-sample backtest and the headline figure |
+| `RESULTS.md` | Full Phase 1 write-up |
 
-## Next
+## Cut from Phase 1
 
-- Learn the linear algebra behind eigenvalues properly
-- Remove the market mode and re-test the noise fit
-- Compare cleaned and uncleaned correlation matrices in a portfolio backtest
+Sector matching (1.4) and the Ledoit-Wolf benchmark (1.8) were cut for time and are planned for later.
+
+## Reference
+
+Laloux, Cizeau, Bouchaud and Potters (1999), "Noise dressing of financial correlation matrices," *Physical Review Letters* 83, 1467.
