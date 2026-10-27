@@ -1,5 +1,7 @@
 ﻿# EIGEN: Cleaning stock correlation matrices with random matrix theory
 
+[![DOI](https://zenodo.org/badge/1308185313.svg)](https://doi.org/10.5281/zenodo.23696486)
+
 **Status: v1.0, Phase 1 complete.**
 
 I built a 102 x 102 correlation matrix from 4,205 days of returns for 102 large US stocks (2010 to 2026). The top eigenvalue reached 38.06 out of 102, showing a single broad market factor carries roughly 37% of all stock movement, and exactly eight eigenvalues beat the Marchenko-Pastur noise ceiling of 1.34. I cleaned the matrix by eigenvalue clipping, built minimum-variance portfolios, and tested them on unseen days over 176 monthly rebalances.
