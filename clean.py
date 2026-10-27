@@ -21,6 +21,10 @@ def clip(corr, T):
     cleaned = cleaned / np.outer(d, d)
     return cleaned
 
+def to_covariance(corr, vols):
+    vols = np.asarray(vols)
+    return np.asarray(corr) * np.outer(vols, vols)
+
 
 if __name__ == "__main__":
     import pandas as pd
@@ -34,3 +38,12 @@ if __name__ == "__main__":
     print("sum of eigenvalues:", round(np.linalg.eigvalsh(cleaned).sum(), 1))
     print("stocks 0 & 1, before:", round(np.asarray(corr)[0, 1], 3),
           "after:", round(cleaned[0, 1], 3))
+
+    vols = returns.std()
+    cov_raw = to_covariance(corr, vols)
+    cov_clean = to_covariance(cleaned, vols)
+
+    annual = vols * np.sqrt(252)
+    print("calmest 3:", annual.sort_values().head(3).round(3).to_dict())
+    print("wildest 3:", annual.sort_values().tail(3).round(3).to_dict())
+    print("raw matches pandas:", np.allclose(cov_raw, returns.cov()))
