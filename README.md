@@ -4,7 +4,7 @@
 
 I built a 102 x 102 correlation matrix from 4,205 days of returns for 102 large US stocks (2010 to 2026). The top eigenvalue reached 38.06 out of 102, showing a single broad market factor carries roughly 37% of all stock movement, and exactly eight eigenvalues beat the Marchenko-Pastur noise ceiling of 1.34. I cleaned the matrix by eigenvalue clipping, built minimum-variance portfolios, and tested them on unseen days over 176 monthly rebalances.
 
-**Verdict: on this data, cleaning does not beat the raw matrix.** Raw had the lowest realized risk (13.01%, vs 14.59% clipped and 13.39% clipped-adjusted). All three matrices also promised too little risk: every realized number came in about 50% higher than predicted.
+**Conclusion: on this data, cleaning does not beat the raw matrix.** Raw had the lowest realized risk (13.01%, vs 14.59% clipped and 13.39% clipped-adjusted). All three matrices also promised too little risk: every realized number came in about 50% higher than predicted.
 
 ![Predicted vs realized portfolio risk](figures/headline.png)
 
