@@ -21,7 +21,7 @@ Requires Python 3.14. On Windows:
     py -m venv .venv
     .venv\Scripts\Activate.ps1
     pip install -r requirements.txt
-    python backtest.py
+    python run_all.py
 
 The data is cached in `returns.parquet`, so no download is needed. A fresh clone reproduces the numbers above exactly.
 
@@ -35,6 +35,7 @@ The data is cached in `returns.parquet`, so no download is needed. A fresh clone
 | `portfolio.py` | Minimum-variance portfolios |
 | `backtest.py` | Rolling out-of-sample backtest and the headline figure |
 | `RESULTS.md` | Full Phase 1 write-up |
+| `run_all.py` | Regenerates all three figures and prints the headline ratios |
 
 ## Cut from Phase 1
 
